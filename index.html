@@ -1,14 +1,309 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <title>ระบบความสะอาดห้องเรียน</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบติดตามความสะอาดห้องเรียน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <h1>ประกาศคะแนนความสะอาดห้องเรียน</h1>
-  <button onclick="clearData()">ล้างข้อมูล</button>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b-4 border-indigo-500">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="text-center md:text-left mb-4 md:mb-0">
+                    <h1 class="text-3xl font-bold text-gray-800">🏫 ระบบติดตามคะแนนความสะอาดห้องเรียนรายวัน</h1>
+                    <p class="text-gray-600 mt-1">ระบบตรวจสอบและจัดการคะแนนความสะอาดห้องเรียน</p>
+                    <p class="text-indigo-600 font-medium mt-1">โครงการห้องเรียนเทพฯเป็นหนึ่ง โรงเรียนเทพศิรินทร์ นนทบุรี</p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button id="criteriaToggle" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                        📋 เกณฑ์คะแนน
+                    </button>
+                    <button id="adminToggle" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                        👨‍🏫 แผงควบคุม
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
 
-  <script src="script.js"></script>
+    <!-- Statistics Summary -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">📊 สรุปผลคะแนน</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="statsGrid">
+                <!-- Statistics will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="max-w-7xl mx-auto px-4 pb-6">
+        <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">🔍 ตัวกรอง</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">กรองตามระดับชั้น</label>
+                    <select id="gradeFilter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">ทุกระดับชั้น</option>
+                        <option value="1">ม.1</option>
+                        <option value="2">ม.2</option>
+                        <option value="3">ม.3</option>
+                        <option value="4">ม.4</option>
+                        <option value="5">ม.5</option>
+                        <option value="6">ม.6</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">กรองตามระดับคะแนน</label>
+                    <select id="levelFilter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="">ทุกระดับ</option>
+                        <option value="excellent">ยอดเยี่ยม 🏆</option>
+                        <option value="very-good">ดีเยี่ยม 🌟</option>
+                        <option value="good">ดี 🙂</option>
+                        <option value="not-passed">ต้องปรับปรุง ❌</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="max-w-7xl mx-auto px-4 pb-8">
+        <div id="classroomGrid" class="space-y-8">
+            <!-- Classroom cards will be generated here -->
+        </div>
+    </div>
+
+    <!-- Criteria Modal -->
+    <div id="criteriaModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div class="bg-blue-600 text-white p-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold">📋 เกณฑ์การให้คะแนนความสะอาดห้องเรียน</h2>
+                    <button id="closeCriteria" class="text-white hover:text-gray-200 text-2xl">&times;</button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+                <div class="space-y-6">
+                    <!-- Detailed Scoring Criteria -->
+                    <div class="bg-indigo-50 border-2 border-indigo-400 rounded-xl p-6 mb-6">
+                        <h3 class="text-2xl font-bold text-indigo-800 mb-4 text-center">📊 เกณฑ์การให้คะแนนรายหมวด (7 หมวด)</h3>
+                        <!-- Criteria content continues... -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
+            <div class="bg-indigo-600 text-white p-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold">👨‍🏫 แผงควบคุมครู - อัพเดทคะแนน</h2>
+                    <button id="closeAdmin" class="text-white hover:text-gray-200 text-2xl">&times;</button>
+                </div>
+            </div>
+            
+            <!-- Password Input Screen -->
+            <div id="adminPasswordScreen" class="p-6">
+                <div class="max-w-md mx-auto text-center">
+                    <div class="text-6xl mb-4">🔐</div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">ป้อนรหัสผ่าน</h3>
+                    <p class="text-gray-600 mb-6">กรุณาป้อนรหัสผ่านเพื่อเข้าใช้งานแผงควบคุมครู</p>
+                    
+                    <div class="space-y-4">
+                        <input 
+                            type="password" 
+                            id="adminPassword"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-center text-xl"
+                            placeholder="รหัสผ่าน"
+                            maxlength="6"
+                        >
+                        <button id="submitPassword" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-medium transition-colors">
+                            🔓 เข้าสู่ระบบ
+                        </button>
+                        <div id="passwordError" class="text-red-600 text-sm hidden">
+                            ❌ รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Control Panel (Hidden initially) -->
+            <div id="adminControlPanel" class="p-6 overflow-y-auto max-h-[calc(90vh-120px)] hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="adminGrid">
+                    <!-- Admin input cards will be generated here -->
+                </div>
+                <div class="mt-6 flex flex-wrap justify-end gap-4">
+                    <button id="saveAll" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                        💾 บันทึกทั้งหมด
+                    </button>
+                    <button id="clearAllData" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                        ล้างข้อมูล
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Gallery Modal -->
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div class="bg-indigo-600 text-white p-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold">📷 รูปภาพหลักฐานการตรวจสอบ</h3>
+                    <button id="closeImageModal" class="text-white hover:text-gray-200 text-2xl">&times;</button>
+                </div>
+                <div class="text-sm mt-1" id="imageModalTitle"></div>
+            </div>
+            <div class="p-6">
+                <div class="text-center mb-4">
+                    <img id="modalImage" src="" alt="รูปภาพหลักฐาน" class="max-w-full max-h-[60vh] mx-auto rounded-lg shadow-lg">
+                </div>
+                <div id="imageNavigation" class="flex justify-center items-center gap-4 mb-4">
+                    <button id="prevImage" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg">← ก่อนหน้า</button>
+                    <span id="imageCounter" class="text-gray-600 font-medium">1 / 1</span>
+                    <button id="nextImage" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg">ถัดไป →</button>
+                </div>
+                <div id="imageThumbnails" class="flex justify-center gap-2 overflow-x-auto">
+                    <!-- Thumbnails will be generated here -->
+                </div>
+                <div class="mt-4 text-sm text-gray-600 text-center">
+                    ใช้ปุ่มหรือคลิกที่รูปย่อเพื่อเปลี่ยนรูป
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Classroom Detail Modal -->
+    <div id="classroomDetailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+            <div class="bg-blue-600 text-white p-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold">รายละเอียดห้องเรียน</h3>
+                    <button id="closeClassroomDetail" class="text-white hover:text-gray-200 text-2xl">&times;</button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+                <div class="text-center mb-4">
+                    <div class="text-2xl font-bold text-gray-800" id="detailRoom"></div>
+                    <div class="text-gray-600" id="detailGrade"></div>
+                </div>
+                
+                <!-- View Mode -->
+                <div id="detailViewMode" class="space-y-4">
+                    <div id="detailScoreDisplay" class="text-center p-4 rounded-lg bg-gray-100">
+                        <div class="text-3xl mb-2" id="detailEmoji">🙂</div>
+                        <div class="text-2xl font-bold mb-1" id="detailScore">0</div>
+                        <div class="text-lg font-medium" id="detailLevel">ดี</div>
+                    </div>
+                    <div id="detailImageSection" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">📷 รูปภาพหลักฐานการตรวจสอบ</label>
+                        <div id="detailImageGrid" class="grid grid-cols-2 gap-2">
+                            <!-- Images will be populated here -->
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1 text-center">คลิกที่รูปภาพเพื่อดูขนาดใหญ่</div>
+                    </div>
+                    <div class="text-center text-sm text-gray-500">
+                        อัพเดทล่าสุด: <span id="detailLastUpdated"></span>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-sm text-gray-500 bg-gray-50 p-3 rounded-lg">
+                            📝 การแก้ไขคะแนนและรูปภาพสามารถทำได้เฉพาะครูผ่านแผงควบคุมครูเท่านั้น
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Update Modal for Admin -->
+    <div id="quickUpdateAdminModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div class="bg-green-600 text-white p-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold">อัพเดทคะแนนด่วน</h3>
+                    <button id="closeQuickUpdateAdmin" class="text-white hover:text-gray-200 text-2xl">&times;</button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="text-center mb-4">
+                    <div class="text-2xl font-bold text-gray-800" id="quickUpdateAdminRoom"></div>
+                    <div class="text-gray-600" id="quickUpdateAdminGrade"></div>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">คะแนนความสะอาด (0-100)</label>
+                        <input 
+                            type="number" 
+                            min="0" 
+                            max="100" 
+                            id="quickUpdateAdminScore"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-center text-xl"
+                            placeholder="กรอกคะแนน"
+                        >
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">📷 รูปภาพหลักฐาน (สูงสุด 5 รูป)</label>
+                        <input 
+                            type="file" 
+                            accept="image/*"
+                            multiple
+                            id="quickUpdateAdminImage"
+                            class="w-full border border-gray-300 rounded-lg p-3 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                        >
+                        <div class="text-xs text-gray-500 mt-1">อัพโหลดรูปภาพเพื่อเป็นหลักฐานการตรวจสอบ (เลือกได้หลายรูปพร้อมกัน)</div>
+                        <div id="quickUpdateImagePreview" class="mt-2 grid grid-cols-2 gap-2 hidden">
+                            <!-- Image previews will appear here -->
+                        </div>
+                        <div id="quickUpdateExistingImages" class="mt-2 hidden">
+                            <div class="text-xs font-medium text-gray-700 mb-2">📷 รูปภาพที่มีอยู่แล้ว</div>
+                            <div id="existingImagesGrid" class="grid grid-cols-2 gap-2">
+                                <!-- Existing images will appear here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div id="quickUpdateAdminPreview" class="text-center p-3 rounded-lg bg-gray-100">
+                        <div class="text-lg font-medium">กรอกคะแนนเพื่อดูผล</div>
+                    </div>
+                    <button id="saveQuickUpdateAdmin" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium transition-colors">
+                        💾 บันทึกคะแนน
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-60 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div class="bg-yellow-600 text-white p-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold">⚠️ ยืนยันการบันทึก</h3>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="text-center mb-6">
+                    <div class="text-6xl mb-4">❓</div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-2">คุณแน่ใจหรือไม่?</h4>
+                    <p class="text-gray-600" id="confirmationMessage">คุณต้องการบันทึกข้อมูลนี้หรือไม่?</p>
+                </div>
+                <div class="flex gap-3">
+                    <button id="cancelConfirmation" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-medium transition-colors">
+                        ยกเลิก
+                    </button>
+                    <button id="confirmSave" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium transition-colors">
+                        ยืนยัน
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
