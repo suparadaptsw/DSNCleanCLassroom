@@ -74,10 +74,524 @@
       <div id="classroomGrid" class="space-y-8"></div>
   </div>
 
-  <!-- ✅ ส่วนนี้จะต้องมี Modals ทั้งหมด (criteriaModal, adminModal, imageModal, classroomDetailModal, quickUpdateAdminModal, confirmationModal) 
-       ซึ่งให้คงตามต้นฉบับที่คุณมี เพียงตัด <script> ออก -->
+  <!-- Main Dashboard -->
+    <div id="dashboard" class="max-w-7xl mx-auto px-4 pb-8">
+        <div id="classroomGrid" class="space-y-8">
+            <!-- Classroom cards will be generated here -->
+        </div>
+    </div>
 
-  <script src="script.js"></script>
+    <!-- Criteria Modal -->
+    <div id="criteriaModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div class="bg-blue-600 text-white p-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold">📋 เกณฑ์การให้คะแนนความสะอาดห้องเรียน</h2>
+                    <button id="closeCriteria" class="text-white hover:text-gray-200 text-2xl">&times;</button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+                <div class="space-y-6">
+                    <!-- Detailed Scoring Criteria -->
+                    <div class="bg-indigo-50 border-2 border-indigo-400 rounded-xl p-6 mb-6">
+                        <h3 class="text-2xl font-bold text-indigo-800 mb-4 text-center">📊 เกณฑ์การให้คะแนนรายหมวด (7 หมวด)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            <!-- 1. เครื่องใช้ไฟฟ้า -->
+                            <div class="bg-white rounded-lg p-4 border border-indigo-200">
+                                <h4 class="font-bold text-indigo-700 mb-3 text-center">⚡ 1. เครื่องใช้ไฟฟ้า (10 คะแนน)</h4>
+                                <div class="space-y-1 text-xs">
+                                    <div class="bg-green-50 p-2 rounded">
+                                        <div class="font-semibold text-green-700">10 คะแนน</div>
+                                        <div>• ปิดเครื่องทุกชนิด</div>
+                                    </div>
+                                    <div class="bg-yellow-50 p-2 rounded">
+                                        <div class="font-semibold text-yellow-700">5 คะแนน</div>
+                                        <div>• มีการปิดไม่ครบ</div>
+                                    </div>
+                                    <div class="bg-red-50 p-2 rounded">
+                                        <div class="font-semibold text-red-700">0 คะแนน</div>
+                                        <div>• ไม่ปิดเลย ไม่มีการแจ้งใด ๆ</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2. พื้นและสิ่งของบนพื้น -->
+                            <div class="bg-white rounded-lg p-4 border border-indigo-200">
+                                <h4 class="font-bold text-indigo-700 mb-3 text-center">🧹 2. พื้นและสิ่งของบนพื้น (20 คะแนน)</h4>
+                                <div class="space-y-1 text-xs">
+                                    <div class="bg-green-50 p-2 rounded">
+                                        <div class="font-semibold text-green-700">20 คะแนน</div>
+                                        <div>• พื้นสะอาด ไม่มีขยะ</div>
+                                        <div>• ไม่มีของวางบนพื้น เว้นแต่แจ้งไว้ชัดเจนและจัดเรียบร้อย</div>
+                                    </div>
+                                    <div class="bg-yellow-50 p-2 rounded">
+                                        <div class="font-semibold text-yellow-700">15-19 คะแนน</div>
+                                        <div>• มีขยะเล็กน้อยหรือของวางไม่มากและเป็นระเบียบ</div>
+                                    </div>
+                                    <div class="bg-orange-50 p-2 rounded">
+                                        <div class="font-semibold text-orange-700">10-14 คะแนน</div>
+                                        <div>• มีขยะ/ของวางกระจัดกระจาย</div>
+                                    </div>
+                                    <div class="bg-red-50 p-2 rounded">
+                                        <div class="font-semibold text-red-700">0-9 คะแนน</div>
+                                        <div>• พื้นสกปรก มีขยะหลายจุด ไม่มีการจัดระเบียบเลย</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-2 rounded border-l-4 border-gray-400">
+                                        <div class="font-semibold text-gray-700">หมายเหตุ</div>
+                                        <div>• ขยะชิ้นเล็ก 1 ชิ้น = <span class="text-red-600">-1 คะแนน</span></div>
+                                        <div>• ขยะชิ้นใหญ่ = <span class="text-red-600">-5 คะแนน</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. ถังขยะและการจัดการขยะ -->
+                            <div class="bg-white rounded-lg p-4 border border-indigo-200">
+                                <h4 class="font-bold text-indigo-700 mb-3 text-center">🗑️ 3. ถังขยะและการจัดการขยะ (20 คะแนน)</h4>
+                                <div class="space-y-1 text-xs">
+                                    <div class="bg-green-50 p-2 rounded">
+                                        <div class="font-semibold text-green-700">20 คะแนน</div>
+                                        <div>• ไม่มีขยะในถัง ยกเว้นถุงเปล่า</div>
+                                        <div>• ขยะที่เก็บเพื่อใช้มีการแจ้งชัดเจน</div>
+                                    </div>
+                                    <div class="bg-yellow-50 p-2 rounded">
+                                        <div class="font-semibold text-yellow-700">15-19 คะแนน</div>
+                                        <div>• ขยะในถังเล็กน้อย</div>
+                                    </div>
+                                    <div class="bg-orange-50 p-2 rounded">
+                                        <div class="font-semibold text-orange-700">8-14 คะแนน</div>
+                                        <div>• มีขยะในถัง(แต่ไม่เต็ม) หรือไม่มีการจัดการ</div>
+                                    </div>
+                                    <div class="bg-red-50 p-2 rounded">
+                                        <div class="font-semibold text-red-700">0-7 คะแนน</div>
+                                        <div>• ขยะเต็ม/ล้น ไม่มีการดูแล</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 4. การทิ้ง/เก็บขวดน้ำ -->
+                            <div class="bg-white rounded-lg p-4 border border-indigo-200">
+                                <h4 class="font-bold text-indigo-700 mb-3 text-center">🍼 4. การทิ้ง/เก็บขวดน้ำ (20 คะแนน)</h4>
+                                <div class="space-y-1 text-xs">
+                                    <div class="bg-green-50 p-2 rounded">
+                                        <div class="font-semibold text-green-700">20 คะแนน</div>
+                                        <div>• เก็บขวดน้ำในภาชนะเป็นระเบียบ</div>
+                                        <div>• แจ้งหากเก็บไว้ใช้</div>
+                                    </div>
+                                    <div class="bg-yellow-50 p-2 rounded">
+                                        <div class="font-semibold text-yellow-700">15-19 คะแนน</div>
+                                        <div>• ไม่เก็บขวดน้ำใส่ภาชนะ</div>
+                                        <div>• มีขวดน้ำวางอยู่บริเวณตระกร้า หรือถุงดำ</div>
+                                    </div>
+                                    <div class="bg-orange-50 p-2 rounded">
+                                        <div class="font-semibold text-orange-700">8-14 คะแนน</div>
+                                        <div>• ขวดล้นหรือกระจัดกระจาย</div>
+                                    </div>
+                                    <div class="bg-red-50 p-2 rounded">
+                                        <div class="font-semibold text-red-700">0-7 คะแนน</div>
+                                        <div>• ขวดน้ำวางทั่วห้อง ไม่มีการเก็บใด ๆ</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 5. กระดาน -->
+                            <div class="bg-white rounded-lg p-4 border border-indigo-200">
+                                <h4 class="font-bold text-indigo-700 mb-3 text-center">📋 5. กระดาน (5 คะแนน)</h4>
+                                <div class="space-y-1 text-xs">
+                                    <div class="bg-green-50 p-2 rounded">
+                                        <div class="font-semibold text-green-700">5 คะแนน</div>
+                                        <div>• ลบสะอาด ไม่มีข้อความที่ไม่จำเป็น</div>
+                                    </div>
+                                    <div class="bg-yellow-50 p-2 rounded">
+                                        <div class="font-semibold text-yellow-700">3-4 คะแนน</div>
+                                        <div>• มีรอยเขียนเล็กน้อย หรือข้อความไม่ชัดเจน</div>
+                                    </div>
+                                    <div class="bg-red-50 p-2 rounded">
+                                        <div class="font-semibold text-red-700">0-2 คะแนน</div>
+                                        <div>• ไม่ลบ หรือเขียนข้อความที่ควรลบ</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 6. หน้าต่าง -->
+                            <div class="bg-white rounded-lg p-4 border border-indigo-200">
+                                <h4 class="font-bold text-indigo-700 mb-3 text-center">🪟 6. หน้าต่าง (5 คะแนน)</h4>
+                                <div class="space-y-1 text-xs">
+                                    <div class="bg-green-50 p-2 rounded">
+                                        <div class="font-semibold text-green-700">5 คะแนน</div>
+                                        <div>• ปิดหน้าต่างครบถ้วน (ยกเว้นบานที่ชำรุด)</div>
+                                    </div>
+                                    <div class="bg-yellow-50 p-2 rounded">
+                                        <div class="font-semibold text-yellow-700">1-4 คะแนน</div>
+                                        <div>• ปิดไม่ครบทุกบาน</div>
+                                    </div>
+                                    <div class="bg-red-50 p-2 rounded">
+                                        <div class="font-semibold text-red-700">0 คะแนน</div>
+                                        <div>• ไม่ปิดเลย</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-2 rounded border-l-4 border-gray-400">
+                                        <div class="font-semibold text-gray-700">หมายเหตุ</div>
+                                        <div>• หักบานละ 1 คะแนน</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 7. โต๊ะและเก้าอี้นักเรียน -->
+                            <div class="bg-white rounded-lg p-4 border border-indigo-200">
+                                <h4 class="font-bold text-indigo-700 mb-3 text-center">🪑 7. โต๊ะและเก้าอี้นักเรียน (20 คะแนน)</h4>
+                                <div class="space-y-1 text-xs">
+                                    <div class="bg-green-50 p-2 rounded">
+                                        <div class="font-semibold text-green-700">20 คะแนน</div>
+                                        <div>• ยกเก้าอี้และจัดเรียงโต๊ะอย่างเป็นระเบียบ</div>
+                                        <div>• ไม่มีของวางบนโต๊ะและใต้โต๊ะ</div>
+                                    </div>
+                                    <div class="bg-yellow-50 p-2 rounded">
+                                        <div class="font-semibold text-yellow-700">15-19 คะแนน</div>
+                                        <div>• มีโต๊ะหรือเก้าอี้วางไม่เป็นรูปแบบเดียวกัน</div>
+                                        <div>• หรือลืมของไว้บริเวณโต๊ะ</div>
+                                    </div>
+                                    <div class="bg-orange-50 p-2 rounded">
+                                        <div class="font-semibold text-orange-700">8-14 คะแนน</div>
+                                        <div>• หลายตัวไม่เรียบร้อย หรือมีของวางจำนวนมาก</div>
+                                    </div>
+                                    <div class="bg-red-50 p-2 rounded">
+                                        <div class="font-semibold text-red-700">0-7 คะแนน</div>
+                                        <div>• ไม่มีการจัดโต๊ะเก้าอี้เลย หรือเกะกะ</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-center bg-white rounded-lg p-3 border border-indigo-200">
+                            <div class="text-lg font-bold text-indigo-800">คะแนนรวม = 100 คะแนน</div>
+                            <div class="text-sm text-indigo-600">เครื่องใช้ไฟฟ้า (10) + พื้นและสิ่งของบนพื้น (20) + ถังขยะและการจัดการขยะ (20) + การทิ้ง/เก็บขวดน้ำ (20) + กระดาน (5) + หน้าต่าง (5) + โต๊ะและเก้าอี้นักเรียน (20)</div>
+                        </div>
+                    </div>
+
+                    <!-- Scoring Levels Summary -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-6">
+                            <div class="text-center mb-4">
+                                <div class="text-4xl mb-2">🏆</div>
+                                <h3 class="text-2xl font-bold text-yellow-800">ยอดเยี่ยม</h3>
+                                <div class="text-xl font-semibold text-yellow-700">100 คะแนน</div>
+                            </div>
+                            <ul class="space-y-2 text-sm text-yellow-800">
+                                <li>✅ ได้คะแนนเต็มทุกหมวด</li>
+                                <li>✅ โต๊ะเก้าอี้เรียงระเบียบดีมาก</li>
+                                <li>✅ พื้นห้องสะอาดมาก ไม่มีขยะ</li>
+                                <li>✅ ถังขยะว่างเปล่าหรือมีถุงใหม่</li>
+                                <li>✅ กระดานและหน้าต่างสะอาดใส</li>
+                                <li>✅ ความสะอาดรวมดีเยี่ยม</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-green-50 border-2 border-green-400 rounded-xl p-6">
+                            <div class="text-center mb-4">
+                                <div class="text-4xl mb-2">🌟</div>
+                                <h3 class="text-2xl font-bold text-green-800">ดีเยี่ยม</h3>
+                                <div class="text-xl font-semibold text-green-700">90-99 คะแนน</div>
+                            </div>
+                            <ul class="space-y-2 text-sm text-green-800">
+                                <li>✅ ได้คะแนนดีในส่วนใหญ่</li>
+                                <li>✅ โต๊ะเก้าอี้เรียงระเบียบดี</li>
+                                <li>✅ พื้นห้องสะอาด มีขยะเล็กน้อย</li>
+                                <li>✅ ถังขยะมีขยะเล็กน้อย</li>
+                                <li>✅ กระดานและหน้าต่างค่อนข้างสะอาด</li>
+                                <li>⚠️ มีจุดที่ต้องปรับปรุงเล็กน้อย</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-blue-50 border-2 border-blue-400 rounded-xl p-6">
+                            <div class="text-center mb-4">
+                                <div class="text-4xl mb-2">🙂</div>
+                                <h3 class="text-2xl font-bold text-blue-800">ดี</h3>
+                                <div class="text-xl font-semibold text-blue-700">80-89 คะแนน</div>
+                            </div>
+                            <ul class="space-y-2 text-sm text-blue-800">
+                                <li>✅ ได้คะแนนปานกลางในหลายหมวด</li>
+                                <li>⚠️ โต๊ะเก้าอี้เรียงระเบียบปานกลาง</li>
+                                <li>⚠️ พื้นห้องค่อนข้างสะอาด</li>
+                                <li>⚠️ ถังขยะมีขยะปานกลาง</li>
+                                <li>⚠️ กระดานและหน้าต่างมีรอยเปื้อนบ้าง</li>
+                                <li>⚠️ ต้องปรับปรุงในหลายจุด</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-red-50 border-2 border-red-400 rounded-xl p-6">
+                            <div class="text-center mb-4">
+                                <div class="text-4xl mb-2">❌</div>
+                                <h3 class="text-2xl font-bold text-red-800">ต้องปรับปรุง</h3>
+                                <div class="text-xl font-semibold text-red-700">ต่ำกว่า 80 คะแนน</div>
+                            </div>
+                            <ul class="space-y-2 text-sm text-red-800">
+                                <li>❌ ได้คะแนนต่ำในหลายหมวด</li>
+                                <li>❌ โต๊ะเก้าอี้ไม่เรียงระเบียบ</li>
+                                <li>❌ พื้นห้องสกปรก มีขยะมาก</li>
+                                <li>❌ ถังขยะเต็มหรือล้น</li>
+                                <li>❌ กระดานและหน้าต่างสกปรกมาก</li>
+                                <li>❌ ต้องทำความสะอาดใหม่ทั้งหมด</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Additional Guidelines -->
+                    <div class="bg-gray-50 rounded-xl p-6 mt-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">📝 หลักเกณฑ์การตรวจสอบเพิ่มเติม</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold text-gray-700 mb-2">🕐 เวลาในการตรวจสอบ</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• ตรวจสอบทุกวันหลังเลิกเรียน</li>
+                                    <li>• เริ่มตรวจเวลา 16:00 น.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-700 mb-2">👥 ผู้รับผิดชอบ</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• คณะกรรมการบริหารนักเรียน</li>
+                                    <li>• คณะทำงานพิเศษสารวัตรนักเรียน</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-700 mb-2">🎯 เป้าหมาย</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• ห้องเรียนสะอาด 100%</li>
+                                    <li>• คะแนนเฉลี่ย 90+ ทุกห้อง</li>
+                                    <li>• สร้างนิสัยรักความสะอาด</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-700 mb-2">🏆 รางวัล</h4>
+                                <ul class="text-sm text-gray-600 space-y-1">
+                                    <li>• ห้องเรียนดีเด่นประจำเดือน</li>
+                                    <li>• ใบประกาศเกียรติคุณ</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="bg-indigo-50 rounded-xl p-6">
+                        <h3 class="text-xl font-bold text-indigo-800 mb-3">📞 ติดต่อสอบถาม</h3>
+                        <div class="text-sm text-indigo-700">
+                            <p>หากมีข้อสงสัยเกี่ยวกับเกณฑ์การให้คะแนน กรุณาติดต่อ:</p>
+                            <p class="mt-2">🏫 <strong>โรงเรียนเทพศิรินทร์ นนทบุรี</strong></p>
+                            <p>📧 งานกิจการนักเรียน</p>
+                            <p>📱 ครูศุภรดา โพธิสุวรรณ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden">
+            <div class="bg-indigo-600 text-white p-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold">👨‍🏫 แผงควบคุมครู - อัพเดทคะแนน</h2>
+                    <button id="closeAdmin" class="text-white hover:text-gray-200 text-2xl">&times;</button>
+                </div>
+            </div>
+            
+            <!-- Password Input Screen -->
+            <div id="adminPasswordScreen" class="p-6">
+                <div class="max-w-md mx-auto text-center">
+                    <div class="text-6xl mb-4">🔐</div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">ป้อนรหัสผ่าน</h3>
+                    <p class="text-gray-600 mb-6">กรุณาป้อนรหัสผ่านเพื่อเข้าใช้งานแผงควบคุมครู</p>
+                    
+                    <div class="space-y-4">
+                        <input 
+                            type="password" 
+                            id="adminPassword"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-center text-xl"
+                            placeholder="รหัสผ่าน"
+                            maxlength="6"
+                        >
+                        <button id="submitPassword" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-medium transition-colors">
+                            🔓 เข้าสู่ระบบ
+                        </button>
+                        <div id="passwordError" class="text-red-600 text-sm hidden">
+                            ❌ รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Control Panel (Hidden initially) -->
+            <div id="adminControlPanel" class="p-6 overflow-y-auto max-h-[calc(90vh-120px)] hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="adminGrid">
+                    <!-- Admin input cards will be generated here -->
+                </div>
+                <div class="mt-6 flex flex-wrap justify-end gap-4">
+                    <button id="saveAll" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                        💾 บันทึกทั้งหมด
+                    </button>
+
+                    <button id="clearAllData" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                        ล้างข้อมูล
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Gallery Modal -->
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div class="bg-indigo-600 text-white p-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold">📷 รูปภาพหลักฐานการตรวจสอบ</h3>
+                    <button id="closeImageModal" class="text-white hover:text-gray-200 text-2xl">&times;</button>
+                </div>
+                <div class="text-sm mt-1" id="imageModalTitle"></div>
+            </div>
+            <div class="p-6">
+                <div class="text-center mb-4">
+                    <img id="modalImage" src="" alt="รูปภาพหลักฐาน" class="max-w-full max-h-[60vh] mx-auto rounded-lg shadow-lg">
+                </div>
+                <div id="imageNavigation" class="flex justify-center items-center gap-4 mb-4">
+                    <button id="prevImage" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg">← ก่อนหน้า</button>
+                    <span id="imageCounter" class="text-gray-600 font-medium">1 / 1</span>
+                    <button id="nextImage" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg">ถัดไป →</button>
+                </div>
+                <div id="imageThumbnails" class="flex justify-center gap-2 overflow-x-auto">
+                    <!-- Thumbnails will be generated here -->
+                </div>
+                <div class="mt-4 text-sm text-gray-600 text-center">
+                    ใช้ปุ่มหรือคลิกที่รูปย่อเพื่อเปลี่ยนรูป
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Classroom Detail Modal -->
+    <div id="classroomDetailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+            <div class="bg-blue-600 text-white p-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold">รายละเอียดห้องเรียน</h3>
+                    <button id="closeClassroomDetail" class="text-white hover:text-gray-200 text-2xl">&times;</button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+                <div class="text-center mb-4">
+                    <div class="text-2xl font-bold text-gray-800" id="detailRoom"></div>
+                    <div class="text-gray-600" id="detailGrade"></div>
+                </div>
+                
+                <!-- View Mode -->
+                <div id="detailViewMode" class="space-y-4">
+                    <div id="detailScoreDisplay" class="text-center p-4 rounded-lg bg-gray-100">
+                        <div class="text-3xl mb-2" id="detailEmoji">🙂</div>
+                        <div class="text-2xl font-bold mb-1" id="detailScore">0</div>
+                        <div class="text-lg font-medium" id="detailLevel">ดี</div>
+                    </div>
+                    <div id="detailImageSection" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">📷 รูปภาพหลักฐานการตรวจสอบ</label>
+                        <div id="detailImageGrid" class="grid grid-cols-2 gap-2">
+                            <!-- Images will be populated here -->
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1 text-center">คลิกที่รูปภาพเพื่อดูขนาดใหญ่</div>
+                    </div>
+                    <div class="text-center text-sm text-gray-500">
+                        อัพเดทล่าสุด: <span id="detailLastUpdated"></span>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-sm text-gray-500 bg-gray-50 p-3 rounded-lg">
+                            📝 การแก้ไขคะแนนและรูปภาพสามารถทำได้เฉพาะครูผ่านแผงควบคุมครูเท่านั้น
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Update Modal for Admin -->
+    <div id="quickUpdateAdminModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div class="bg-green-600 text-white p-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold">อัพเดทคะแนนด่วน</h3>
+                    <button id="closeQuickUpdateAdmin" class="text-white hover:text-gray-200 text-2xl">&times;</button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="text-center mb-4">
+                    <div class="text-2xl font-bold text-gray-800" id="quickUpdateAdminRoom"></div>
+                    <div class="text-gray-600" id="quickUpdateAdminGrade"></div>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">คะแนนความสะอาด (0-100)</label>
+                        <input 
+                            type="number" 
+                            min="0" 
+                            max="100" 
+                            id="quickUpdateAdminScore"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-center text-xl"
+                            placeholder="กรอกคะแนน"
+                        >
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">📷 รูปภาพหลักฐาน (สูงสุด 5 รูป)</label>
+                        <input 
+                            type="file" 
+                            accept="image/*"
+                            multiple
+                            id="quickUpdateAdminImage"
+                            class="w-full border border-gray-300 rounded-lg p-3 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                        >
+                        <div class="text-xs text-gray-500 mt-1">อัพโหลดรูปภาพเพื่อเป็นหลักฐานการตรวจสอบ (เลือกได้หลายรูปพร้อมกัน)</div>
+                        <div id="quickUpdateImagePreview" class="mt-2 grid grid-cols-2 gap-2 hidden">
+                            <!-- Image previews will appear here -->
+                        </div>
+                        <div id="quickUpdateExistingImages" class="mt-2 hidden">
+                            <div class="text-xs font-medium text-gray-700 mb-2">📷 รูปภาพที่มีอยู่แล้ว</div>
+                            <div id="existingImagesGrid" class="grid grid-cols-2 gap-2">
+                                <!-- Existing images will appear here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div id="quickUpdateAdminPreview" class="text-center p-3 rounded-lg bg-gray-100">
+                        <div class="text-lg font-medium">กรอกคะแนนเพื่อดูผล</div>
+                    </div>
+                    <button id="saveQuickUpdateAdmin" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium transition-colors">
+                        💾 บันทึกคะแนน
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-60 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div class="bg-yellow-600 text-white p-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold">⚠️ ยืนยันการบันทึก</h3>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="text-center mb-6">
+                    <div class="text-6xl mb-4">❓</div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-2">คุณแน่ใจหรือไม่?</h4>
+                    <p class="text-gray-600" id="confirmationMessage">คุณต้องการบันทึกข้อมูลนี้หรือไม่?</p>
+                </div>
+                <div class="flex gap-3">
+                    <button id="cancelConfirmation" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-medium transition-colors">
+                        ยกเลิก
+                    </button>
+                    <button id="confirmSave" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium transition-colors">
+                        ยืนยัน
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
 
